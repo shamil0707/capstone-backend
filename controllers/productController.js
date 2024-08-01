@@ -23,9 +23,9 @@ const getProductById = async (req,res)=>{
 
 const addNewProduct = async (req,res,next)=>{
     try {
-        const Product = new Product(req.body)
-        await Product.save()
-        res.status(201).json(Product)
+        const product = new Product(req.body)
+        await product.save()
+        res.status(201).json(product)
     } catch (error) {
         res.status(400).send("Check data")
     }
