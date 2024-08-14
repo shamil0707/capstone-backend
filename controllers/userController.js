@@ -14,7 +14,12 @@ const getAllUsers = async (req,res,next)=>{
 }
 
 const getUserById = async (req,res,next)=>{
-    res.send("Not written")
+    try {
+        const user = await User.findById(req.params.userId)
+        res.status(200).json(user)
+    } catch (error) {
+        res.status(404).send("User not found")
+    }
     }
 
 

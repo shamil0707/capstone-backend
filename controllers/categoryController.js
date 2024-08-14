@@ -11,7 +11,7 @@ const getAllCategories = async (req,res,next)=>{
     }
 }
 
-const getCategoryById = async (req,res)=>{
+const getCategoryBySlug = async (req,res)=>{
     try {
         const category = await Category.findById(req.params.categoryId)
         res.status(200).json(category)
@@ -51,7 +51,7 @@ const deleteCategory = async (req,res,next)=>{
 }
 module.exports ={
     getAllCategories,
-    getCategoryById,
+    getCategoryBySlug,
     addNewCategory,
     updatedCategory,
     deleteCategory

@@ -1,4 +1,13 @@
 const Product = require('../models/product')
+const cloudinary = require('cloudinary').v2;
+
+cloudinary.config({ 
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
+    api_key: process.env.CLOUDINARY_API_KEY, 
+    api_secret: process.env.CLOUDINARY_API_SECRET 
+});
+
+
 
 const getAllProducts = async (req,res,next)=>{
     try {
@@ -6,27 +15,43 @@ const getAllProducts = async (req,res,next)=>{
        res.status(200).json(products)
     } 
     catch (error) {
+      
         res.status(500).send("Error occured")
         
     }
 }
 
-const getProductById = async (req,res)=>{
+const getProductBySlug = async (req,res)=>{
     try {
-        const Product = await Product.findById(req.params.ProductId)
-        res.status(200).json(Product)
+        
     } 
     catch (error) {
         res.status(404).send("Could not find Product")
     }
 }
 
-const addNewProduct = async (req,res,next)=>{
+const addNewProduct = async (req,res, next) => {
     try {
-        const product = new Product(req.body)
-        await product.save()
-        res.status(201).json(product)
+        if(!req.file){
+            res.status(400).send("file missing")
+        }
+       
+const uploadResult = await new Promise((resolve) => {
+    cloudinary.uploader.upload_stream((error, uploadResult) => {
+        return resolve(uploadResult);
+    }).end(req.file.buffer);
+});
+ 
+    const body = JSON.parse(req.body.productDetails)
+    const productDetails = {
+        ...body,
+        image: uploadResult.url
+    }
+         const product = new Product(productDetails)
+         await product.save()
+         res.status(200).json({})
     } catch (error) {
+        console.log(error)
         res.status(400).send("Check data")
     }
 }
@@ -51,7 +76,7 @@ const deleteProduct = async (req,res,next)=>{
 }
 module.exports ={
     getAllProducts,
-    getProductById,
+    getProductBySlug,
     addNewProduct,
     updatedProduct,
     deleteProduct
