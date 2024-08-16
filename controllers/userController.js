@@ -15,8 +15,10 @@ const getAllUsers = async (req,res,next)=>{
 
 const getUserById = async (req,res,next)=>{
     try {
-        const user = await User.findById(req.params.userId)
-        res.status(200).json(user)
+        const user = await User.findById(req.user._id)
+        const payload = user.toObject ? user.toObject(): user;
+        delete payload.password
+        res.status(200).json(payload)
     } catch (error) {
         res.status(404).send("User not found")
     }
@@ -28,6 +30,7 @@ const addNewUser = async (req,res,next)=>{
         const hash = bcrypt.hashSync(req.body.password, saltRounds);
         const user = new User({
           ...req.body,
+          role: 'user',
           password:hash
     
         }
